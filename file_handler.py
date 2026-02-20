@@ -153,10 +153,13 @@ class ConcurrentRecordingManager:
     
     async def acquire(self, user_id: int) -> bool:
         """Try to start a new recording for user."""
+        if not self.recording_semaphore:
+            raise RuntimeError("Recording manager not initialized")
+        
         if user_id in self.active_recordings:
             return False
         
-        if self.recording_semaphore.locked():
+        if self.get_active_count() >= self.max_concurrent:
             return False
         
         await self.recording_semaphore.acquire()

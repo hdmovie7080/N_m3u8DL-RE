@@ -23,7 +23,7 @@ from pyrogram.enums import ParseMode
 from dotenv import load_dotenv
 
 from recording import RecorderFactory
-from file_handler import initialize_handlers, file_handler, recording_manager
+from file_handler import initialize_handlers
 
 # Load environment variables
 load_dotenv()
@@ -64,6 +64,10 @@ app = Client(
     workers=4,
     sleep_threshold=0
 )
+
+# Global handlers (initialized during startup)
+file_handler = None
+recording_manager = None
 
 # User states for tracking recording progress
 user_states = {}  # user_id -> {"recording_method": "", "delivery_method": "", "message_id": int}
@@ -503,15 +507,22 @@ async def set_bot_commands():
 
 async def main():
     """Main function."""
+    global file_handler, recording_manager
+    
     logger.info("Starting SONY YAY! Recording Bot...")
     
     # Initialize file handler and recording manager
-    initialize_handlers(RECORDINGS_DIR, MAX_CONCURRENT_RECORDINGS)
+    file_handler, recording_manager = initialize_handlers(RECORDINGS_DIR, MAX_CONCURRENT_RECORDINGS)
+    
+    if not file_handler or not recording_manager:
+        logger.error("Failed to initialize file handler and recording manager")
+        sys.exit(1)
     
     # Initialize recording manager semaphore
     await recording_manager.initialize()
+    logger.info("File handler and recording manager initialized")
     
-    # Set bot commands
+    # Start bot
     await app.start()
     logger.info("Bot started successfully!")
     
