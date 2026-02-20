@@ -1,0 +1,9 @@
+pyrogram>=2.0.106
+tgcrypto>=1.2.5
+aiofiles>=23.2.1
+python-dotenv>=1.0.0
+pymongo>=4.3.3
+psutil>=5.9.6
+requests>=2.31.0
+pytz>=2023.3
+aiohttp>=3.9.0

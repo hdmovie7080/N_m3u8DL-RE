@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  sony-yay-bot:
+    build: .
+    container_name: sony-yay-recording-bot
+    restart: unless-stopped
+    environment:
+      - API_ID=${API_ID}
+      - API_HASH=${API_HASH}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - OWNER_ID=${OWNER_ID}
+      - SONY_STREAM_URL=${SONY_STREAM_URL:-https://sliv.tgaadi.workers.dev/sonyyaysd.m3u8}
+      - GOFILE_TOKEN=${GOFILE_TOKEN}
+      - RECORDINGS_DIR=/app/recordings
+      - MAX_CONCURRENT_RECORDINGS=${MAX_CONCURRENT_RECORDINGS:-3}
+      - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB:-4096}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./recordings:/app/recordings
+      - ./sony_bot.log:/app/sony_bot.log
+    networks:
+      - bot-network
+
+networks:
+  bot-network:
+    driver: bridge
